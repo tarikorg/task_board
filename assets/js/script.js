@@ -38,7 +38,7 @@ function createTaskCard(task) {
 
   // Create HTML markup for task card
   const taskCardHTML = `
-  <div class="task-card card border-light mb-3">
+  <div class="task-card card border-light mb-3" data-task-id="${task.id}">
       <div class="card-header bg-white">
           <h5 class="card-title">${task.title}</h5>
       </div>
@@ -48,7 +48,6 @@ function createTaskCard(task) {
       </div>
   </div>
 `;
-
 return taskCardHTML;
 
 }
@@ -64,9 +63,9 @@ function renderTaskList() {
     $('#done-cards').empty();
 //make cards . loop through task lists and make one for each
 taskList.forEach(task => {
-    const taskCardHTML = createTaskCard(task); // call createTaskCard
+    const taskCardHTML = createTaskCard(task) // call createTaskCard
      // Add task card to the todo container
-     $('#${task.status}-cards').append(taskCardHTML);
+     $('#' + task.status + '-cards').append(taskCardHTML)
 });
 
 // Make task cards draggable
@@ -97,6 +96,7 @@ function handleAddTask(event) {
         title: taskTitle,
         dueDate: dueDate,
         description: description,
+        status: 'todo'
     }
 
     // update task list
@@ -127,9 +127,7 @@ const taskId = $(this).closest('.task-card').data('task-id')
 // param task defines each taskList object in the array
 // if true that means we are not targeting that element to be deleted so its passes to the new array we create
 
-taskList = taskList.filter(function(task){
-    return task.id !== taskId
-});
+taskList = taskList.filter(task => task.id !== taskId)
 
 // update in local storage
 localStorage.setItem("tasks", JSON.stringify(taskList));
@@ -150,30 +148,29 @@ function handleDrop(event, ui) {
    // get the id of dragged object
    const taskId = droppedTaskCard.data('task-id')
 
+ 
+
    // get the id of the place we drop it into
    const droppableLaneId = $(this).attr('id')
+  
+  
 
    // Update the status of the dropped task based on the new status lane
-   const newLane = getLaneId(droppableLaneId)
-
-
+   const newLane = droppableLaneId.split('-')[0]
+ 
+   
     // Find the dropped task in the taskList array
-    let droppedTaskIndex;
-    for (let i = 0; i < taskList.length; i++) {
-        if (taskList[i].id === taskId) {
-            droppedTaskIndex = i;
-            break;
-        }
+    const droppedTaskIndex = taskList.findIndex(task => task.id === taskId)
+
+
+
+    if (droppedTaskIndex !== -1) {
+        taskList[droppedTaskIndex].status = newLane
+        localStorage.setItem("tasks", JSON.stringify(taskList))
+        renderTaskList();
+    } else {
+        console.error("Task not found in taskList:", taskId)
     }
-
-    // Update the status of the dropped task
-    taskList[droppedTaskIndex].status = newLane;
-
-    // Update the local storage with the modified task list
-    localStorage.setItem("tasks", JSON.stringify(taskList));
-
-    // Re-render the task list to reflect the changes
-    renderTaskList();
 }
 
 
@@ -183,20 +180,19 @@ function handleDrop(event, ui) {
 
 //======================================================================================
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
+
 $(document).ready(function () {
 
+// Event listeners
+targetSaveButton.click(handleAddTask);
+$(document).on('click', '.delete-task', handleDeleteTask);
 
+//make lane droppable
+$('.lane').droppable({
+    accept: '.task-card',
+    drop: handleDrop
+});
 
 
 renderTaskList();
-
-    targetSaveButton.click(handleAddTask) // when clicked on savebutton trigger handle add task
-
-
-    //make lanes droppable
-    $('.lane').droppable({
-        accept: '.task-card',
-        drop: handleDrop
-    })
-
 });
