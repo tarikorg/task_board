@@ -23,7 +23,7 @@ user can click to delete any of the task card they created
 Rutgers Bootcamp resources.
 
 ## Deployment
-Link to my repo - Module 05(https://github.com/tarikorg/task_board)
-
+- Link to my repo - Module 05(https://github.com/tarikorg/task_board)
+- deployed application - https://tarikorg.github.io/task_board/
 ## License
 Please refer to the LISCENSE in the repo which, is the MIT liscense.

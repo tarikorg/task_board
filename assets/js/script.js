@@ -30,17 +30,31 @@ function generateTaskId() {
 // Todo: create a function to create a task card
 
 function createTaskCard(task) {
+const today = new Date()
+const dueDate = new Date(task.dueDate)
+const timeDiff = dueDate.getTime() - today.getTime()
+const daysUntilDue = Math.ceil(timeDiff / (1000*3600*24)) // timediff - a day(in miliseconds to keep it accurate)
 
+//color based due date
+let textColor = ''
+let bgCardColor = ''
+if(daysUntilDue < 0){
+    textColor = 'text-dark' //bootstrap colors
+    bgCardColor = 'bg-danger'
+}else if(daysUntilDue <= 2){
+    textColor = 'text-dark' // bootstrap colors
+    bgCardColor = 'bg-warning'
+}
 
   const taskCardHTML = `
-    <div class="task-card card border-light mb-3" data-task-id="${task.id}">
-        <div class="card-header bg-white">
+    <div class="task-card card border-light mb-3 " data-task-id="${task.id}">
+        <div class="card-header ${bgCardColor} ${textColor}">
             <h5 class="card-title">${task.title}</h5>
             <p class="card-text"><strong>Due Date:</strong> ${task.dueDate}</p>
             <p class="card-text"><strong>Description:</strong> ${task.description}</p>
             <button class="btn btn-danger delete-task"><i class="fas fa-trash-alt"></i></button>
         </div>
-        <div class="card-body bg-light">
+        <div class="card-body bg-dark ">
         </div>
     </div>
   `;
