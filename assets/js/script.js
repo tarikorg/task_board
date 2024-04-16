@@ -30,10 +30,9 @@ function generateTaskId() {
 // Todo: create a function to create a task card
 
 function createTaskCard(task) {
-const today = new Date()
-const dueDate = new Date(task.dueDate)
-const timeDiff = dueDate.getTime() - today.getTime()
-const daysUntilDue = Math.ceil(timeDiff / (1000*3600*24)) // timediff - a day(in miliseconds to keep it accurate)
+const dueDate = dayjs(task.dueDate)
+const today = dayjs()
+const daysUntilDue = dueDate.diff(today, 'day')
 
 //color based due date
 let textColor = ''
